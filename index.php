@@ -1,6 +1,39 @@
 <?php
 include "./controllers/DoughnutController.php";
 
+$edit = false;
+if ($_SERVER['REQUEST_METHOD'] == "POST") {
+
+    if (isset($_POST['save'])) {
+        DoughnutController::store();
+        header("Location: ./index.php");
+        die;
+    }
+
+    if (isset($_POST['edit'])) {
+        $doughnut = DoughnutController::show();
+        $edit = true;
+    }
+    
+    if (isset($_POST['update'])) {
+        $doughnut = DoughnutController::update();
+        header("Location: ./index.php");
+        die;
+    }
+
+    if (isset($_POST['cancel'])) {
+        header("Location: ./index.php");
+        die;
+    }
+
+
+    if (isset($_POST['destroy'])) {
+        DoughnutController::destroy();
+        header("Location: ./index.php");
+        die;
+    }
+}
+
 $doughnuts = DoughnutController::index();
 
 ?>
@@ -22,25 +55,25 @@ $doughnuts = DoughnutController::index();
         <div class="form-group row mb-3">
             <label for="title" class="col-sm-1 col-form-label text-center">Title</label>
             <div class="col-sm-4">
-                <input type="text" name="title" value="<?= $edit ? $doughnut->title : "" ?>" class="form-control" placeholder="Spurgos pavadinimas">
+                <input type="text" name="title" value="<?= $edit ? $doughnut->title : "" ?>" class="form-control" required placeholder="Spurgos pavadinimas">
             </div>
         </div>
         <div class="form-group row mb-3">
             <label for="price" class="col-sm-1 col-form-label text-center">Price</label>
             <div class="col-sm-4">
-                <input type="number" name="price" value="<?= $edit ? $doughnut->price : "" ?>" class="form-control" placeholder="Kaina Eur.">
+                <input type="number" name="price" value="<?= $edit ? $doughnut->price : "" ?>" class="form-control" step="0.01" min="0" max="20" required placeholder="Kaina Eur.">
             </div>
         </div>
         <div class="form-group row mb-3">
             <label for="weight" class="col-sm-1 col-form-label text-center">Weight</label>
             <div class="col-sm-4">
-                <input type="number" name="weight" value="<?= $edit ? $doughnut->weight : "" ?>" class="form-control" placeholder="Svoris (g.)">
+                <input type="number" name="weight" value="<?= $edit ? $doughnut->weight : "" ?>" class="form-control" step="1" min="1" max="500" placeholder="Svoris (g.)">
             </div>
         </div>
         <div class="form-group row mb-3">
             <label for="has_hole" class="col-sm-1 col-form-label text-center">With hole</label>
             <div class="col-sm-4">
-                <input type="number" name="has_hole" value="<?= $edit ? $doughnut->has_hole : "" ?>" class="form-control" placeholder="Pilnavidurė (0), tusciavidure(1)">
+                <input type="number" name="has_hole" value="<?= $edit ? $doughnut->has_hole : "" ?>" class="form-control"  step="1" min="0" max="1" placeholder="Pilnavidurė (0), tusciavidure(1)">
             </div>
         </div>
         <div hidden class="form-group row mb-3">
@@ -51,39 +84,15 @@ $doughnuts = DoughnutController::index();
         </div>
         <div class="form-group row mb-3">
             <div class="col-sm-4 text-center">
-                <button type="submit" class="btn btn-primary">Sign in</button>
+                <?php
+                if ($edit) { ?>
+                    <button type="submit" name="update" class="btn btn-success">Update</button>
+                    <button type="submit" name="cancel" class="btn btn-warning">Cancel</button>
+                <?php } else { ?>
+                    <button type="submit" name="save" class="btn btn-primary">Save</button>
+                <?php } ?>
             </div>
         </div>
-    </form>
-    <form action="" method="post">
-        <input type="text" name="title" value="<?= $edit ? $doughnut->title : "" ?>">title<br>
-        <input type="number" name="price" value="<?= $edit ? $doughnut->price : "" ?>">price (Eur.)<br>
-        <input type="number" name="weight" value="<?= $edit ? $doughnut->weight : "" ?>">weight (g.)<br>
-        <input type="number" name="has_hole" value="<?= $edit ? $doughnut->has_hole : "" ?>">has hole (0 or 1)<br>
-        <input type="hidden" name="id" value="<?= $edit ? $doughnut->id : "" ?>">
-
-        <?php
-        if ($edit) { ?>
-            <button type="submit" name="update" class="btn btn-success">update</button>
-        <?php } else { ?>
-            <button type="submit" name="save" class="btn btn-primary">save</button>
-        <?php } ?>
-
-
-        <!-- <?php
-                if ($edit) { ?>
-   <input type="text" name="material" value="<?= $shoe->manufacturer ?>">material<br>
-   <input type="text" name="material" value="<?= $shoe->color ?>">material<br>
-   <input type="text" name="material" value="<?= $shoe->size ?>">material<br>
-   <input type="text" name="material" value="<?= $shoe->material ?>">material<br>
-
-<?php } else { ?>
-   <input type="text" name="material">material<br>
-   <input type="text" name="material">material<br>
-   <input type="text" name="material">material<br>
-   <input type="text" name="material">material<br>
-
-<?php } ?> -->
     </form>
     <div class="table-responsive">
         <table class="table table-hover table-dark" id="table">
@@ -110,7 +119,7 @@ $doughnuts = DoughnutController::index();
                     <td>
                         <form action="" method="post">
                             <input type="hidden" name="id" value="<?= $doughnut->id ?>">
-                            <button type="submit" name="destroy" class="btn btn-danger">delete</button>
+                            <button type="submit" name="destroy" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this item?');">delete</button>
                         </form>
                     </td>
                 </tr>

@@ -1,0 +1,14 @@
+{
+	"folders": [
+		{
+			"path": "../PHP_OOP_MYSQL"
+		},
+		{
+			"path": "../okCrud-master"
+		},
+		{
+			"path": "."
+		}
+	],
+	"settings": {}
+}
